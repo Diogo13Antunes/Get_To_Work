@@ -10,7 +10,7 @@ install_theme() {
     echo "Installing theme..."
     git clone "$THEME_REPO" || { echo "Error: Unable to clone the repository."; exit 1; }
     mkdir -p "$ZSH_THEME_DIR" || { echo "Error: Unable to create directory $ZSH_THEME_DIR."; exit 1; }
-    mv "$THEME_NAME.zsh-theme" "$ZSH_THEME_DIR/" || { echo "Error: Unable to move theme file to $ZSH_THEME_DIR."; exit 1; }
+    cp "$THEME_NAME.zsh-theme" "$ZSH_THEME_DIR/" || { echo "Error: Unable to move theme file to $ZSH_THEME_DIR."; exit 1; }
     sed -i '' "s/ZSH_THEME=\".*\"/ZSH_THEME=\"$THEME_NAME\"/" "$ZSHRC_FILE" || { echo "Error: Unable to set theme in $ZSHRC_FILE."; exit 1; }
     echo "Theme installed successfully!"
     echo "Please restart your terminal or run 'source $ZSHRC_FILE' to apply the changes."
