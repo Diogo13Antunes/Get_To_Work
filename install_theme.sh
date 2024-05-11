@@ -1,6 +1,6 @@
 #!/bin/bash
 
-THEME_NAME="gettowork.zsh-theme"
+THEME_NAME="gettowork"
 GITHUB_USERNAME="Diogo13Antunes"
 THEME_REPO="https://github.com/$GITHUB_USERNAME/Get_To_Work.git"
 ZSH_THEME_DIR="$HOME/.oh-my-zsh/themes"
