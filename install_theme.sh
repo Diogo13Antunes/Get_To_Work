@@ -31,7 +31,7 @@ install_theme() {
 	echo "Installing theme..."
 	git clone "$THEME_REPO" || { echo "Error: Unable to clone the repository."; exit 1; }
 	mkdir -p "$ZSH_THEME_DIR" || { echo "Error: Unable to create directory $ZSH_THEME_DIR."; exit 1; }
-	cp "$THEME_NAME.zsh-theme" "$ZSH_THEME_DIR/" || { echo "Error: Unable to move theme file to $ZSH_THEME_DIR."; exit 1; }
+	cp "Get_To_Work/$THEME_NAME.zsh-theme" "$ZSH_THEME_DIR/" || { echo "Error: Unable to move theme file to $ZSH_THEME_DIR."; exit 1; }
 
 	if [ ! -f "$ZSHRC_FILE" ]; then
 		echo "Error: .zshrc file not found. Please create it in your home directory and try again."
