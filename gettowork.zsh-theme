@@ -13,16 +13,30 @@ function set_prompt() {
 
 	if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == "true" ]]; then
 		local git_status="$(git status 2> /dev/null)"
-		if [[ "$git_status" =~ "nothing to commit" ]]; then
-			PROMPT='%B%{$BG[002]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
+		if [[ "$git_status" =~ "Changes not staged for commit" ]]; then
+			PROMPT='%B%{$BG[001]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
 		elif [[ "$git_status" =~ "Changes to be committed" ]]; then
-			PROMPT='%B%{$BG[003]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
-		elif [[ "$git_status" =~ "Changes not staged for commit" ]]; then
 			PROMPT='%B%{$BG[172]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
+		elif [[ "$git_status" =~ "nothing to commit" ]]; then
+			local git_branch=$(git symbolic-ref --short -q HEAD)
+			local git_tracking_branch=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))
+			if [[ -n "$git_tracking_branch" ]]; then
+				local local_commit=$(git rev-parse @)
+				local remote_commit=$(git rev-parse "$git_tracking_branch")
+				local base_commit=$(git merge-base @ "$git_tracking_branch")
+				if [[ "$local_commit" == "$remote_commit" ]]; then
+					PROMPT='%B%{$BG[002]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
+				elif [[ "$local_commit" == "$base_commit" ]]; then
+					PROMPT='%B%{$BG[003]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
+				else
+					PROMPT='%B%{$BG[172]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
+				fi
+			else
+				PROMPT='%B%{$BG[172]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
+			fi
 		else
 			PROMPT='%B%{$BG[001]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
 		fi
-
 		PROMPT+='
 '
 	fi
@@ -42,4 +56,5 @@ TMOUT=1
 
 TRAPALRM() {
 	zle reset-prompt
+	set_prompt
 }
