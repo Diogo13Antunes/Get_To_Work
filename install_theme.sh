@@ -17,7 +17,12 @@ install_theme() {
 		exit 1
 	fi
 
-	sed -i '' "s/ZSH_THEME=\".*\"/ZSH_THEME=\"$THEME_NAME\"/" "$ZSHRC_FILE" || { echo "Error: Unable to set theme in $ZSHRC_FILE."; exit 1; }
+	if [ "$(uname)" == "Darwin" ]; then
+		sed -i '' "s/ZSH_THEME=\".*\"/ZSH_THEME=\"$THEME_NAME\"/" "$ZSHRC_FILE" || { echo "Error: Unable to set theme in $ZSHRC_FILE."; exit 1; }
+	else
+		sed -i "s/ZSH_THEME=\".*\"/ZSH_THEME=\"$THEME_NAME\"/" "$ZSHRC_FILE" || { echo "Error: Unable to set theme in $ZSHRC_FILE."; exit 1; }
+	fi
+
 	echo "Theme installed successfully!"
 	echo "Please restart your terminal or run 'source $ZSHRC_FILE' to apply the changes."
 }
