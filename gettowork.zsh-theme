@@ -23,9 +23,6 @@ function set_prompt() {
 			PROMPT='%B%{$BG[001]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
 		fi
 
-		if [[ "$git_status" =~ "nothing to commit" ]]; then
-		else
-		fi
 		PROMPT+='
 '
 	fi
