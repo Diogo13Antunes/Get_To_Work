@@ -58,9 +58,12 @@ precmd() {
 	set_prompt
 }
 
-TMOUT=1
-
-TRAPALRM() {
-	zle reset-prompt
-	set_prompt
+function zle-line-init zle-keymap-select {
+    case $KEYMAP in
+        (main|viins|visual|vicmd)
+            set_prompt
+    esac
 }
+
+typeset -agUz preexec_functions
+preexec_functions+='set_prompt'
