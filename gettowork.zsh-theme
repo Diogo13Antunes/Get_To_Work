@@ -44,6 +44,12 @@ function set_prompt() {
 	PROMPT+="%B${venv_indicator}%{$FG[006]%}%1/%{$reset_color%} ➙  %b"
 }
 
+function git_prompt_info() {
+	local ref
+	ref=$(git symbolic-ref --quiet HEAD 2> /dev/null) || return
+	echo "[${ref#refs/heads/}]"
+}
+
 RPROMPT='%B%{$FG[011]%}[%D{%H:%M:%S}]%{$reset_color%}%b'
 
 set_prompt
