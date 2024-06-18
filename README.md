@@ -23,7 +23,7 @@ curl -fsSL https://raw.githubusercontent.com/Diogo13Antunes/Get_To_Work/main/ins
 
 This will automatically install the theme and configure your Zsh.
 
-## Installation
+## Update
 
 To update this theme, you can simply run the following command:
 
