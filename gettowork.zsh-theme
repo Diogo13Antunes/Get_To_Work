@@ -25,7 +25,7 @@ function set_prompt() {
         if [[ "$git_status" =~ "Changes not staged for commit" ]]; then
             PROMPT='%B%{$BG[001]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Vermelho
         elif [[ "$git_status" =~ "Changes to be committed" ]]; then
-            PROMPT='%B%{$BG[172]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Laranja
+            PROMPT='%B%{$BG[202]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Laranja
         elif [[ "$git_status" =~ "nothing to commit" ]]; then
             PROMPT='%B%{$BG[002]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Verde
         else
