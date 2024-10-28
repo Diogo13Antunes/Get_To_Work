@@ -29,11 +29,9 @@ function set_prompt() {
         elif [[ "$git_status" =~ "nothing to commit" ]]; then
             PROMPT='%B%{$BG[002]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Verde
         else
-            # Para o caso de outros estados (não rastreados, etc.)
             PROMPT='%B%{$BG[001]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Vermelho
         fi
 
-        # Verifica se há branches remotas para puxar ou empurrar
         local git_tracking_branch=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))
         if [[ -n "$git_tracking_branch" ]]; then
             local local_commit=$(git rev-parse @)
@@ -41,15 +39,12 @@ function set_prompt() {
             local base_commit=$(git merge-base @ "$git_tracking_branch")
             if [[ "$local_commit" != "$remote_commit" ]]; then
                 PROMPT='%B%{$BG[003]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Azul (mudança necessária)
-            # elif [[ "$local_commit" == "$base_commit" ]]; then
-                # PROMPT='%B%{$BG[172]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Laranja (precisa de commit)
             fi
         fi
 		PROMPT+='
 '
     fi
 
-    # Adiciona a parte do ambiente virtual e o diretório atual
     PROMPT+="${venv_indicator}%{$FG[006]%}%1/%{$reset_color%} ➙  %b"
 }
 
