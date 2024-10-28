@@ -3,59 +3,64 @@ ZSH_THEME_GIT_PROMPT_SUFFIX=" ]"
 ZSH_THEME_GIT_PROMPT_DIRTY=""
 ZSH_THEME_GIT_PROMPT_CLEAN=""
 
-function set_prompt() {
-	local venv_indicator=''
-	if [[ -n $VIRTUAL_ENV ]]; then
-		venv_indicator='%{$fg[white]%}(venv)%{$reset_color%} '
-	fi
-	
-	PROMPT=""
-
-	if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == "true" ]]; then
-		local git_status="$(git status 2> /dev/null)"
-		if [[ "$git_status" =~ "Changes not staged for commit" ]]; then
-			PROMPT='%B%{$BG[001]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
-		elif [[ "$git_status" =~ "Changes to be committed" ]]; then
-			PROMPT='%B%{$BG[172]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
-		elif [[ "$git_status" =~ "nothing to commit" ]]; then
-			local git_branch=$(git symbolic-ref --short -q HEAD)
-			local git_tracking_branch=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))
-			if [[ -n "$git_tracking_branch" ]]; then
-				local local_commit=$(git rev-parse @)
-				local remote_commit=$(git rev-parse "$git_tracking_branch")
-				local base_commit=$(git merge-base @ "$git_tracking_branch")
-				if [[ "$local_commit" == "$remote_commit" ]]; then
-					PROMPT='%B%{$BG[002]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
-				elif [[ "$local_commit" == "$base_commit" ]]; then
-					PROMPT='%B%{$BG[003]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
-				else
-					PROMPT='%B%{$BG[172]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
-				fi
-			else
-				PROMPT='%B%{$BG[172]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
-			fi
-		else
-			PROMPT='%B%{$BG[001]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'
-		fi
-		PROMPT+='
-'
-	fi
-
-	PROMPT+="%B${venv_indicator}%{$FG[006]%}%1/%{$reset_color%} ➙  %b"
+function git_prompt_info() {
+    local ref
+    ref=$(git symbolic-ref --quiet HEAD 2> /dev/null) || return
+    echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref#refs/heads/}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
 }
 
-function git_prompt_info() {
-	local ref
-	ref=$(git symbolic-ref --quiet HEAD 2> /dev/null) || return
-	echo "[${ref#refs/heads/}]"
+function set_prompt() {
+    local venv_indicator=''
+    if [[ -n $VIRTUAL_ENV ]]; then
+        venv_indicator='%{$fg[white]%}(venv)%{$reset_color%} '
+    fi
+
+    # Inicia o prompt
+    PROMPT=""
+
+    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == "true" ]]; then
+        local git_status="$(git status 2> /dev/null)"
+
+        # Configura a cor de fundo com base no status do Git
+        if [[ "$git_status" =~ "Changes not staged for commit" ]]; then
+            PROMPT='%B%{$BG[001]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Vermelho
+        elif [[ "$git_status" =~ "Changes to be committed" ]]; then
+            PROMPT='%B%{$BG[172]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Laranja
+        elif [[ "$git_status" =~ "nothing to commit" ]]; then
+            PROMPT='%B%{$BG[002]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Verde
+        else
+            # Para o caso de outros estados (não rastreados, etc.)
+            PROMPT='%B%{$BG[001]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Vermelho
+        fi
+
+        # Verifica se há branches remotas para puxar ou empurrar
+        local git_tracking_branch=$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))
+        if [[ -n "$git_tracking_branch" ]]; then
+            local local_commit=$(git rev-parse @)
+            local remote_commit=$(git rev-parse "$git_tracking_branch")
+            local base_commit=$(git merge-base @ "$git_tracking_branch")
+            if [[ "$local_commit" != "$remote_commit" ]]; then
+                PROMPT='%B%{$BG[003]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Azul (mudança necessária)
+            # elif [[ "$local_commit" == "$base_commit" ]]; then
+                # PROMPT='%B%{$BG[172]%}%{$FG[000]%} $(git_prompt_info) %{$reset_color%}%b'  # Laranja (precisa de commit)
+            fi
+        fi
+		PROMPT+='
+'
+    fi
+
+    # Adiciona a parte do ambiente virtual e o diretório atual
+    PROMPT+="${venv_indicator}%{$FG[006]%}%1/%{$reset_color%} ➙  %b"
 }
 
 RPROMPT='%B%{$FG[011]%}[%D{%H:%M:%S}]%{$reset_color%}%b'
 
+# Set prompt on startup
 set_prompt
 
+# Update prompt before each command is executed
 precmd() {
-	set_prompt
+    set_prompt
 }
 
 function zle-line-init zle-keymap-select {
